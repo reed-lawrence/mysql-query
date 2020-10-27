@@ -1,5 +1,5 @@
 {
-  "name": "mysql-query",
+  "name": "@reed-lawrence/mysql-query",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
