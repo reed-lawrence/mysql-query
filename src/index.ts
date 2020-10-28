@@ -2,7 +2,6 @@ import { PoolConnection, escape, FieldInfo } from 'mysql';
 
 export interface IQueryOptions {
   parameters: object;
-  queryFormat: (query: string, values: any) => string;
 }
 
 export class MySqlQuery {
@@ -10,7 +9,6 @@ export class MySqlQuery {
 
   public parameters: { [index: string]: any } = {};
   public qString: string;
-  public queryFormat?: (query: string, values: any) => string;
 
   constructor(qString: string, connection: PoolConnection, options?: Partial<IQueryOptions>) {
     this.qString = qString;
@@ -18,28 +16,16 @@ export class MySqlQuery {
 
     if (options) {
       if (options.parameters) this.parameters = options.parameters;
-      if (options.queryFormat) this.queryFormat = options.queryFormat;
     }
   }
 
   private query() {
     return new Promise<{ results: any, fields: FieldInfo[] | undefined }>((resolve, reject) => {
 
-      if (this.queryFormat !== undefined) {
-
-        this.dbconn.query(this.queryFormat(this.qString, this.parameters), (err, results, fields) => {
-          if (err) return reject(err);
-          return resolve({ results, fields });
-        });
-
-      } else {
-
-        this.dbconn.query(this.qString, this.parameters, (err, results, fields) => {
-          if (err) return reject(err);
-          return resolve({ results, fields });
-        });
-
-      }
+      this.dbconn.query(this.qString, this.parameters, (err, results, fields) => {
+        if (err) return reject(err);
+        return resolve({ results, fields });
+      });
 
     });
   }
